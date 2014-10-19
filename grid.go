@@ -6,9 +6,11 @@ import (
         "bitbucket.org/zombiezen/gopdf/pdf"
 )
 
-func main() {
-	width := pdf.USLetterWidth
-	height := pdf.USLetterHeight
+type grid struct {
+	canvas *pdf.Canvas
+}
+
+func (g *grid) face(width, height pdf.Unit) {
 	square := 5 * pdf.Inch
 	lt := pdf.Point{X: (width - square) / 2, Y: (height - square) / 2}
 	rt := lt
@@ -23,10 +25,16 @@ func main() {
 	path.Line(rb)
 	path.Line(lb)
 	path.Close()
+	g.canvas.Stroke(&path)
+}
 
+func main() {
+	width := pdf.USLetterWidth
+	height := pdf.USLetterHeight
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
-	canvas.Stroke(&path)
+	g := &grid{canvas: canvas}
+	g.face(width, height)
 	canvas.Close()
 	err := doc.Encode(os.Stdout)
 	if err != nil {
