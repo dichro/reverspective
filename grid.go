@@ -10,15 +10,11 @@ type grid struct {
 	canvas *pdf.Canvas
 }
 
-func (g *grid) face(width, height pdf.Unit) {
-	square := 5 * pdf.Inch
-	lt := pdf.Point{X: (width - square) / 2, Y: (height - square) / 2}
-	rt := lt
-	rt.X += square
-	rb := rt
-	rb.Y += square
-	lb := lt
-	lb.Y += square
+func (g *grid) face(bounds pdf.Rectangle, xShrink, yShrink pdf.Unit) {
+	lt := bounds.Min
+	rb := bounds.Max
+	rt := pdf.Point{rb.X, lt.Y}
+	lb := pdf.Point{lt.X, rb.Y}
 	path := pdf.Path{}
 	path.Move(lt)
 	path.Line(rt)
@@ -31,10 +27,20 @@ func (g *grid) face(width, height pdf.Unit) {
 func main() {
 	width := pdf.USLetterWidth
 	height := pdf.USLetterHeight
+	square := 5 * pdf.Inch
+	xStart, yStart := (width - square) / 2, (height - square) / 2
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
 	g := &grid{canvas: canvas}
-	g.face(width, height)
+	middle := pdf.Rectangle{
+		Min: pdf.Point{xStart, yStart},
+		Max: pdf.Point{xStart+square, yStart+square},
+	}
+	g.face(middle, 0, 0)
+	g.face(pdf.Rectangle{
+		Min: pdf.Point{0, 0},
+		Max: pdf.Point{xStart, height},
+	}, 0, 0)
 	canvas.Close()
 	err := doc.Encode(os.Stdout)
 	if err != nil {
