@@ -15,10 +15,21 @@ func (g *grid) face(bounds pdf.Rectangle, xShrink, yShrink pdf.Unit) {
 	rt := bounds.Max
 	rb := pdf.Point{rt.X, lb.Y}
 	lt := pdf.Point{lb.X, rt.Y}
+	delta := yShrink / 2
 	if yShrink > 0 {
-		delta := yShrink / 2
 		rt.Y -= delta
 		rb.Y += delta
+	} else {
+		lt.Y += delta
+		lb.Y -= delta
+	}
+	delta = xShrink / 2
+	if xShrink < 0 {
+		lb.X -= delta
+		rb.X += delta
+	} else {
+		lt.X += delta
+		rt.X -= delta
 	}
 	path := pdf.Path{}
 	path.Move(lt)
@@ -46,6 +57,18 @@ func main() {
 		Min: pdf.Point{0, 0},
 		Max: pdf.Point{xStart, height},
 	}, 0, height-square)
+	g.face(pdf.Rectangle{
+		Min: pdf.Point{0, middle.Max.Y},
+		Max: pdf.Point{width, height},
+	}, square - width, 0)
+	g.face(pdf.Rectangle{
+		Min: pdf.Point{middle.Max.X, 0},
+		Max: pdf.Point{width, height},
+	}, 0, square-height)
+	g.face(pdf.Rectangle{
+		Min: pdf.Point{0, 0},
+		Max: pdf.Point{width, yStart},
+	}, width-square, 0)
 	canvas.Close()
 	err := doc.Encode(os.Stdout)
 	if err != nil {
