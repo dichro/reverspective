@@ -10,26 +10,26 @@ type grid struct {
 	canvas *pdf.Canvas
 }
 
-func (g *grid) face(bounds pdf.Rectangle, xShrink, yShrink pdf.Unit) {
-	lb := bounds.Min
-	rt := bounds.Max
+func (g *grid) face(radius pdf.Unit, xShrink, yShrink pdf.Unit) {
+	lb := pdf.Point{-radius, -radius}
+	rt := pdf.Point{radius, radius}
 	rb := pdf.Point{rt.X, lb.Y}
 	lt := pdf.Point{lb.X, rt.Y}
 	delta := yShrink / 2
-	if yShrink > 0 {
-		rt.Y -= delta
-		rb.Y += delta
+	if yShrink >= 0 {
+		rt.Y *= 1 - delta
+		rb.Y *= 1 - delta
 	} else {
-		lt.Y += delta
-		lb.Y -= delta
+		lt.Y *= 1 + delta
+		lb.Y *= 1 + delta
 	}
 	delta = xShrink / 2
-	if xShrink < 0 {
-		lb.X -= delta
-		rb.X += delta
+	if xShrink <= 0 {
+		lb.X *= 1 + delta
+		rb.X *= 1 + delta
 	} else {
-		lt.X += delta
-		rt.X -= delta
+		lt.X *= 1 - delta
+		rt.X *= 1 - delta
 	}
 	path := pdf.Path{}
 	path.Move(lt)
@@ -44,31 +44,32 @@ func main() {
 	width := pdf.USLetterWidth
 	height := pdf.USLetterHeight
 	square := 5 * pdf.Inch
-	xStart, yStart := (width - square) / 2, (height - square) / 2
+	//xStart, yStart := (width - square) / 2, (height - square) / 2
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
 	g := &grid{canvas: canvas}
-	middle := pdf.Rectangle{
-		Min: pdf.Point{xStart, yStart},
-		Max: pdf.Point{xStart+square, yStart+square},
-	}
-	g.face(middle, 0, 0)
-	g.face(pdf.Rectangle{
-		Min: pdf.Point{0, 0},
-		Max: pdf.Point{xStart, height},
-	}, 0, height-square)
-	g.face(pdf.Rectangle{
-		Min: pdf.Point{0, middle.Max.Y},
-		Max: pdf.Point{width, height},
-	}, square - width, 0)
-	g.face(pdf.Rectangle{
-		Min: pdf.Point{middle.Max.X, 0},
-		Max: pdf.Point{width, height},
-	}, 0, square-height)
-	g.face(pdf.Rectangle{
-		Min: pdf.Point{0, 0},
-		Max: pdf.Point{width, yStart},
-	}, width-square, 0)
+	radius := square / 2
+	canvas.Push()
+	canvas.Translate(width / 2, height / 2)
+	g.face(radius, 0, 0)
+	canvas.Pop()
+	canvas.Push()
+	//canvas.Scale(float32((width - square) / (2 * square)), float32(height / square))
+	canvas.Translate(width / 2, height / 2)
+	g.face(radius, 0, height-square)
+	canvas.Pop()
+//	g.face(pdf.Rectangle{
+//		Min: pdf.Point{0, middle.Max.Y},
+//		Max: pdf.Point{width, height},
+//	}, square - width, 0)
+//	g.face(pdf.Rectangle{
+//		Min: pdf.Point{middle.Max.X, 0},
+//		Max: pdf.Point{width, height},
+//	}, 0, square-height)
+//	g.face(pdf.Rectangle{
+//		Min: pdf.Point{0, 0},
+//		Max: pdf.Point{width, yStart},
+//	}, width-square, 0)
 	canvas.Close()
 	err := doc.Encode(os.Stdout)
 	if err != nil {
