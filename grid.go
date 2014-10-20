@@ -79,13 +79,48 @@ func faces(width, height, square pdf.Unit) []face {
 	}
 }
 
+func project(width, height, square, stretch, squash pdf.Unit) []face {
+	return []face{
+		{
+			(width - square) / 2, height / 2,
+			0,
+			1, 1,
+			1,
+		},
+		{
+			width / 2, (height + square) / 2,
+			math.Pi / 2,
+			squash, 1,
+			stretch,
+		},
+		{
+			width / 2, (height - square) / 2,
+			-math.Pi / 2,
+			squash, 1,
+			stretch,
+		},
+		{
+			(width - square) / 2, height / 2,
+			math.Pi,
+			squash, 1,
+			stretch,
+		},
+		{
+			(width + square) / 2, height / 2,
+			0,
+			squash, 1,
+			stretch,
+		},
+	}
+}
+
 func main() {
 	width := pdf.USLetterWidth
 	height := pdf.USLetterHeight
 	square := 4 * pdf.Inch
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
-	for _, face := range faces(width, height, square) {
+	for _, face := range project(width, height, square, 1.6, 0.5) {
 		canvas.Push()
 		canvas.Translate(face.tx, face.ty)
 		canvas.Rotate(face.rot)
