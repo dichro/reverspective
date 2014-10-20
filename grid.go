@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"math"
 	"fmt"
         "bitbucket.org/zombiezen/gopdf/pdf"
 )
@@ -50,8 +51,14 @@ func main() {
 	g := &grid{canvas: canvas}
 	//radius := square / 2
 	canvas.Push()
-	canvas.Translate(0, height / 2)
-	g.face(square, height / square)
+	canvas.Translate((width - square) / 2, height / 2)
+	g.face(square, 1)
+	canvas.Pop()
+	canvas.Push()
+	canvas.Translate(width / 2, (height + square) / 2)
+	canvas.Rotate(math.Pi / 2)
+	canvas.Scale(float32((height - square) / 2 / square), 1)
+	g.face(square, width / square)
 	canvas.Pop()
 	//canvas.Push()
 	//canvas.Scale(float32((width - square) / (2 * square)), float32(height / square))
