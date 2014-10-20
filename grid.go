@@ -43,16 +43,18 @@ func main() {
 	square := 4 * pdf.Inch
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
-	canvas.Push()
-	canvas.Translate((width-square)/2, height/2)
-	grid(canvas, square, 1)
-	canvas.Pop()
 	for _, face := range []struct {
 		tx, ty  pdf.Unit
 		rot     float32
 		sx, sy  pdf.Unit
 		stretch pdf.Unit
 	}{
+		{
+			(width - square) / 2, height / 2,
+			0,
+			1, 1,
+			1,
+		},
 		{
 			width / 2, (height + square) / 2,
 			math.Pi / 2,
