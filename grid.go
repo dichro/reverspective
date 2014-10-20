@@ -21,7 +21,7 @@ func (f *face) grid(canvas *pdf.Canvas, side pdf.Unit) {
 		path.Line(pdf.Point{x2, -y2})
 		path.Line(pdf.Point{x1, -y1})
 		path.Close()
-		canvas.SetColor(f.fill[0], f.fill[1], f.fill[2])
+		canvas.SetColor(f.gray, f.gray, f.gray)
 		canvas.FillStroke(&path)
 	}
 	path := pdf.Path{}
@@ -43,7 +43,7 @@ type face struct {
 	rot     float32
 	sx      pdf.Unit
 	stretch pdf.Unit
-	fill [3]float32
+	gray float32
 }
 
 func faces(width, height, square pdf.Unit, colour float32) []face {
@@ -53,40 +53,40 @@ func faces(width, height, square pdf.Unit, colour float32) []face {
 			0,
 			1,
 			1,
-			[3]float32{colour, colour, colour},
+			colour,
 		},
 		{
 			width / 2, (height + square) / 2,
 			math.Pi / 2,
 			(height - square) / 2 / square,
 			width / square,
-			[3]float32{colour, colour, colour},
+			colour,
 		},
 		{
 			width / 2, (height - square) / 2,
 			-math.Pi / 2,
 			(height - square) / 2 / square,
 			width / square,
-			[3]float32{colour, colour, colour},
+			colour,
 		},
 		{
 			(width - square) / 2, height / 2,
 			math.Pi,
 			(width - square) / 2 / square,
 			height / square,
-			[3]float32{colour, colour, colour},
+			colour,
 		},
 		{
 			(width + square) / 2, height / 2,
 			0,
 			(width - square) / 2 / square,
 			height / square,
-			[3]float32{colour, colour, colour},
+			colour,
 		},
 	}
 }
 
-func project(width, height, square, stretch pdf.Unit, colour float32) []face {
+func project(width, height, square, stretch pdf.Unit) []face {
 	narrowest := width
 	if height < width {
 		narrowest = height
@@ -98,35 +98,35 @@ func project(width, height, square, stretch pdf.Unit, colour float32) []face {
 			0,
 			1,
 			1,
-			[3]float32{colour, colour, colour},
+			1,
 		},
 		{
 			width / 2, (height + square) / 2,
 			math.Pi / 2,
 			squash,
 			stretch,
-			[3]float32{colour, colour, colour},
+			1,
 		},
 		{
 			width / 2, (height - square) / 2,
 			-math.Pi / 2,
 			squash,
 			stretch,
-			[3]float32{colour, colour, colour},
+			0.5,
 		},
 		{
 			(width - square) / 2, height / 2,
 			math.Pi,
 			squash,
 			stretch,
-			[3]float32{colour, colour, colour},
+			0.8,
 		},
 		{
 			(width + square) / 2, height / 2,
 			0,
 			squash,
 			stretch,
-			[3]float32{colour, colour, colour},
+			0.8,
 		},
 	}
 }
@@ -137,7 +137,7 @@ func main() {
 	square := 4 * pdf.Inch
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
-	for _, face := range project(width, height, square, 1.6, 0.5) {
+	for _, face := range project(width, height, square, 1.6) {
 		canvas.Push()
 		canvas.Translate(face.tx, face.ty)
 		canvas.Rotate(face.rot)
