@@ -8,6 +8,10 @@ import (
 )
 
 func (f *face) grid(canvas *pdf.Canvas, side pdf.Unit) {
+	canvas.Push()
+	canvas.Translate(f.tx, f.ty)
+	canvas.Rotate(f.rot)
+	canvas.Scale(float32(f.sx), 1)
 	rows := pdf.Unit(6)
 	delta := side * (f.stretch - 1) / 2
 	for i := pdf.Unit(0); i < rows; i++ {
@@ -37,6 +41,7 @@ func (f *face) grid(canvas *pdf.Canvas, side pdf.Unit) {
 		}
 	}
 	canvas.Stroke(&path)
+	canvas.Pop()
 }
 
 type face struct {
@@ -139,12 +144,7 @@ func main() {
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
 	for _, face := range project(width, height, square, 1.6) {
-		canvas.Push()
-		canvas.Translate(face.tx, face.ty)
-		canvas.Rotate(face.rot)
-		canvas.Scale(float32(face.sx), 1)
 		face.grid(canvas, square)
-		canvas.Pop()
 	}
 	canvas.Close()
 	err := doc.Encode(os.Stdout)
