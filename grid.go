@@ -59,6 +59,24 @@ func main() {
 			(height - square) / 2 / square, 1,
 			width / square,
 		},
+		{
+			width / 2, (height - square) / 2,
+			-math.Pi / 2,
+			(height - square) / 2 / square, 1,
+			width / square,
+		},
+		{
+			(width - square) / 2, height / 2,
+			math.Pi,
+			(width - square) / 2 / square, 1,
+			height / square,
+		},
+		{
+			(width + square) / 2, height / 2,
+			0,
+			(width - square) / 2 / square, 1,
+			height / square,
+		},
 	} {
 		canvas.Push()
 		canvas.Translate(face.tx, face.ty)
@@ -67,23 +85,6 @@ func main() {
 		grid(canvas, square, face.stretch)
 		canvas.Pop()
 	}
-	canvas.Push()
-	canvas.Translate(width/2, (height-square)/2)
-	canvas.Rotate(-math.Pi / 2)
-	canvas.Scale(float32((height-square)/2/square), 1)
-	grid(canvas, square, width/square)
-	canvas.Pop()
-	canvas.Push()
-	canvas.Translate((width-square)/2, height/2)
-	canvas.Rotate(math.Pi)
-	canvas.Scale(float32((width-square)/2/square), 1)
-	grid(canvas, square, height/square)
-	canvas.Pop()
-	canvas.Push()
-	canvas.Translate((width+square)/2, height/2)
-	canvas.Scale(float32((width-square)/2/square), 1)
-	grid(canvas, square, height/square)
-	canvas.Pop()
 	canvas.Close()
 	err := doc.Encode(os.Stdout)
 	if err != nil {
