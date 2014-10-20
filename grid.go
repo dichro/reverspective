@@ -10,33 +10,32 @@ type grid struct {
 	canvas *pdf.Canvas
 }
 
-func (g *grid) face(radius pdf.Unit, xShrink, yShrink pdf.Unit) {
-	lb := pdf.Point{-radius, -radius}
-	rt := pdf.Point{radius, radius}
-	rb := pdf.Point{rt.X, lb.Y}
-	lt := pdf.Point{lb.X, rt.Y}
-	delta := yShrink / 2
-	if yShrink >= 0 {
-		rt.Y *= 1 - delta
-		rb.Y *= 1 - delta
-	} else {
-		lt.Y *= 1 + delta
-		lb.Y *= 1 + delta
-	}
-	delta = xShrink / 2
-	if xShrink <= 0 {
-		lb.X *= 1 + delta
-		rb.X *= 1 + delta
-	} else {
-		lt.X *= 1 - delta
-		rt.X *= 1 - delta
+func (g *grid) face(side, stretch pdf.Unit) {
+	rows := pdf.Unit(6)
+	for i := pdf.Unit(0); i < rows; i++ {
+		x1 := i * side / rows;
+		x2 := (i+1) * side / rows;
+		y1 := side / 2 * (1 + stretch * i / rows)
+		y2 := side / 2 * (1 + stretch * (i+1) / rows)
+		path := pdf.Path{}
+		path.Move(pdf.Point{x1, y1})
+		path.Line(pdf.Point{x2, y2})
+		path.Line(pdf.Point{x2, -y2})
+		path.Line(pdf.Point{x1, -y1})
+		path.Close()
+		g.canvas.Stroke(&path)
 	}
 	path := pdf.Path{}
-	path.Move(lt)
-	path.Line(rt)
-	path.Line(rb)
-	path.Line(lb)
-	path.Close()
+	for i := pdf.Unit(0); i < rows / 2; i++ {
+		y1 := (i / rows) * side
+		y2 := y1 * (1 + stretch)
+		path.Move(pdf.Point{0, y1})
+		path.Line(pdf.Point{side, y2})
+		if i != 0 {
+			path.Move(pdf.Point{0, -y1})
+			path.Line(pdf.Point{side, -y2})
+		}
+	}
 	g.canvas.Stroke(&path)
 }
 
@@ -48,16 +47,16 @@ func main() {
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
 	g := &grid{canvas: canvas}
-	radius := square / 2
+	//radius := square / 2
 	canvas.Push()
-	canvas.Translate(width / 2, height / 2)
-	g.face(radius, 0, 0)
+	canvas.Translate(0, height / 2)
+	g.face(square, 0)
 	canvas.Pop()
-	canvas.Push()
+	//canvas.Push()
 	//canvas.Scale(float32((width - square) / (2 * square)), float32(height / square))
-	canvas.Translate(width / 2, height / 2)
-	g.face(radius, 0, height-square)
-	canvas.Pop()
+	//canvas.Translate(width / 2, height / 2)
+	//g.face(radius, 0, height-square)
+	//canvas.Pop()
 //	g.face(pdf.Rectangle{
 //		Min: pdf.Point{0, middle.Max.Y},
 //		Max: pdf.Point{width, height},
