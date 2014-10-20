@@ -21,7 +21,8 @@ func (f *face) grid(canvas *pdf.Canvas, side pdf.Unit) {
 		path.Line(pdf.Point{x2, -y2})
 		path.Line(pdf.Point{x1, -y1})
 		path.Close()
-		canvas.SetColor(f.gray, f.gray, f.gray)
+		canvas.SetColor(f.grayFill, f.grayFill, f.grayFill)
+		canvas.SetStrokeColor(f.grayStroke, f.grayStroke, f.grayStroke)
 		canvas.FillStroke(&path)
 	}
 	path := pdf.Path{}
@@ -43,7 +44,7 @@ type face struct {
 	rot     float32
 	sx      pdf.Unit
 	stretch pdf.Unit
-	gray float32
+	grayFill, grayStroke float32
 }
 
 func faces(width, height, square pdf.Unit, colour float32) []face {
@@ -53,35 +54,35 @@ func faces(width, height, square pdf.Unit, colour float32) []face {
 			0,
 			1,
 			1,
-			colour,
+			colour, 0,
 		},
 		{
 			width / 2, (height + square) / 2,
 			math.Pi / 2,
 			(height - square) / 2 / square,
 			width / square,
-			colour,
+			colour, 0,
 		},
 		{
 			width / 2, (height - square) / 2,
 			-math.Pi / 2,
 			(height - square) / 2 / square,
 			width / square,
-			colour,
+			colour, 0,
 		},
 		{
 			(width - square) / 2, height / 2,
 			math.Pi,
 			(width - square) / 2 / square,
 			height / square,
-			colour,
+			colour, 0,
 		},
 		{
 			(width + square) / 2, height / 2,
 			0,
 			(width - square) / 2 / square,
 			height / square,
-			colour,
+			colour, 0,
 		},
 	}
 }
@@ -98,35 +99,35 @@ func project(width, height, square, stretch pdf.Unit) []face {
 			0,
 			1,
 			1,
-			1,
+			1, 0.9,
 		},
 		{
 			width / 2, (height + square) / 2,
 			math.Pi / 2,
 			squash,
 			stretch,
-			1,
+			1, 0.9,
 		},
 		{
 			width / 2, (height - square) / 2,
 			-math.Pi / 2,
 			squash,
 			stretch,
-			0.5,
+			0.5, 0,
 		},
 		{
 			(width - square) / 2, height / 2,
 			math.Pi,
 			squash,
 			stretch,
-			0.8,
+			0.8, 0,
 		},
 		{
 			(width + square) / 2, height / 2,
 			0,
 			squash,
 			stretch,
-			0.8,
+			0.8, 0,
 		},
 	}
 }
