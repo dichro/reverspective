@@ -37,18 +37,15 @@ func grid(canvas *pdf.Canvas, side, stretch pdf.Unit) {
 	canvas.Stroke(&path)
 }
 
-func main() {
-	width := pdf.USLetterWidth
-	height := pdf.USLetterHeight
-	square := 4 * pdf.Inch
-	doc := pdf.New()
-	canvas := doc.NewPage(width, height)
-	for _, face := range []struct {
-		tx, ty  pdf.Unit
-		rot     float32
-		sx, sy  pdf.Unit
-		stretch pdf.Unit
-	}{
+type face struct {
+	tx, ty  pdf.Unit
+	rot     float32
+	sx, sy  pdf.Unit
+	stretch pdf.Unit
+}
+
+func faces(width, height, square pdf.Unit) []face {
+	return []face{
 		{
 			(width - square) / 2, height / 2,
 			0,
@@ -79,7 +76,16 @@ func main() {
 			(width - square) / 2 / square, 1,
 			height / square,
 		},
-	} {
+	}
+}
+
+func main() {
+	width := pdf.USLetterWidth
+	height := pdf.USLetterHeight
+	square := 4 * pdf.Inch
+	doc := pdf.New()
+	canvas := doc.NewPage(width, height)
+	for _, face := range faces(width, height, square) {
 		canvas.Push()
 		canvas.Translate(face.tx, face.ty)
 		canvas.Rotate(face.rot)
