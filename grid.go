@@ -40,7 +40,7 @@ func grid(canvas *pdf.Canvas, side, stretch pdf.Unit) {
 type face struct {
 	tx, ty  pdf.Unit
 	rot     float32
-	sx, sy  pdf.Unit
+	sx      pdf.Unit
 	stretch pdf.Unit
 }
 
@@ -49,31 +49,31 @@ func faces(width, height, square pdf.Unit) []face {
 		{
 			(width - square) / 2, height / 2,
 			0,
-			1, 1,
+			1,
 			1,
 		},
 		{
 			width / 2, (height + square) / 2,
 			math.Pi / 2,
-			(height - square) / 2 / square, 1,
+			(height - square) / 2 / square,
 			width / square,
 		},
 		{
 			width / 2, (height - square) / 2,
 			-math.Pi / 2,
-			(height - square) / 2 / square, 1,
+			(height - square) / 2 / square,
 			width / square,
 		},
 		{
 			(width - square) / 2, height / 2,
 			math.Pi,
-			(width - square) / 2 / square, 1,
+			(width - square) / 2 / square,
 			height / square,
 		},
 		{
 			(width + square) / 2, height / 2,
 			0,
-			(width - square) / 2 / square, 1,
+			(width - square) / 2 / square,
 			height / square,
 		},
 	}
@@ -84,31 +84,31 @@ func project(width, height, square, stretch, squash pdf.Unit) []face {
 		{
 			(width - square) / 2, height / 2,
 			0,
-			1, 1,
+			1,
 			1,
 		},
 		{
 			width / 2, (height + square) / 2,
 			math.Pi / 2,
-			squash, 1,
+			squash,
 			stretch,
 		},
 		{
 			width / 2, (height - square) / 2,
 			-math.Pi / 2,
-			squash, 1,
+			squash,
 			stretch,
 		},
 		{
 			(width - square) / 2, height / 2,
 			math.Pi,
-			squash, 1,
+			squash,
 			stretch,
 		},
 		{
 			(width + square) / 2, height / 2,
 			0,
-			squash, 1,
+			squash,
 			stretch,
 		},
 	}
@@ -124,7 +124,7 @@ func main() {
 		canvas.Push()
 		canvas.Translate(face.tx, face.ty)
 		canvas.Rotate(face.rot)
-		canvas.Scale(float32(face.sx), float32(face.sy))
+		canvas.Scale(float32(face.sx), 1)
 		grid(canvas, square, face.stretch)
 		canvas.Pop()
 	}
