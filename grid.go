@@ -93,11 +93,12 @@ func faces(width, height, square pdf.Unit, colour float32) []face {
 }
 
 func project(width, height, square, stretch pdf.Unit) []face {
-	narrowest := width
-	if height < width {
-		narrowest = height
+	if width < height {
+		height = width
+	} else {
+		width = height
 	}
-	squash := (narrowest - square) / 2 / square
+	squash := (width - square) / 2 / square
 	return []face{
 		{
 			(width - square) / 2, height / 2,
