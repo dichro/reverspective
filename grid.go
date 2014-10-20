@@ -79,7 +79,12 @@ func faces(width, height, square pdf.Unit) []face {
 	}
 }
 
-func project(width, height, square, stretch, squash pdf.Unit) []face {
+func project(width, height, square, stretch pdf.Unit) []face {
+	narrowest := width
+	if height < width {
+		narrowest = height
+	}
+	squash := (narrowest - square) / 2 / square
 	return []face{
 		{
 			(width - square) / 2, height / 2,
@@ -120,7 +125,7 @@ func main() {
 	square := 4 * pdf.Inch
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
-	for _, face := range project(width, height, square, 1.6, 0.5) {
+	for _, face := range project(width, height, square, 1.6) {
 		canvas.Push()
 		canvas.Translate(face.tx, face.ty)
 		canvas.Rotate(face.rot)
