@@ -141,10 +141,10 @@ func project(width, height, square, stretch pdf.Unit) []face {
 func main() {
 	width := pdf.USLetterWidth
 	height := pdf.USLetterHeight
-	square := 4 * pdf.Inch
+	square := 3 * pdf.Inch
 	doc := pdf.New()
 	canvas := doc.NewPage(width, height)
-	for _, face := range project(width, height, square, 1.6) {
+	for _, face := range project(width, height, square, 2.0) {
 		face.grid(canvas, square)
 	}
 	canvas.Close()
